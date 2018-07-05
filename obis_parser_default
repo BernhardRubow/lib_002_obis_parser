@@ -1,0 +1,30 @@
+import re
+
+class obis_parser_default:
+
+  def __init__(self, current, previous):
+    self.set_base_data(current, previous)
+
+
+  def set_base_data(self, current=None, previous=None):
+    if current is not None:
+      self.current = current
+
+    if previous is not None:
+      self.previous = previous
+
+
+  def parse_change(self, register, factor=1, current=None, previous=None):
+    self.set_base_data(current, previous)
+    
+    value_current = self.__parse(register, self.current, factor)
+    value_previous = self.__parse(register, self.previous, factor)
+    return  value_current, value_previous, value_current - value_previous
+
+  def __parse(self, register, content, faktor=1.0):
+    a = register[0:1]
+    b = register [2:3]
+    c = register[4:5]
+    m = re.search('{0}\.{1}\.{2}\(\d+\.\d+'.format(a,b,c), content)
+    value = round(float(m.group(0)[7:]) * faktor,4) 
+    return value
